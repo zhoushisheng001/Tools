@@ -1,0 +1,22 @@
+1.安装virtualbox
+	https://www.virtualbox.org/
+2.安装centos6.6
+3.配置网络
+	右键-->网络-->网卡2-->host-only
+
+	cd /etc/sysconfig/network-scripts/
+	vi ifcfg-eth0
+	将此处改为yes ONBOOT=yes
+	此时可ping外网
+
+	cp ifcfg-eth0 ifcfg-eth1
+	加入以下内容
+	DEVICE=eth1
+	ONBOOT=yes
+	BOOTPROTO=static
+	IPADDR=192.168.56.101
+	NETMASK=255.255.255.0
+
+4.使用工具连接centos
+	https://winscp.net/eng/download.php
+	https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html

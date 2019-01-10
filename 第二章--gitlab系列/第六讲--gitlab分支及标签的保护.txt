@@ -1,0 +1,4 @@
+为什么要保护分支
+	保护特定的分支不被随便合并，以免影响相应的分支
+进入项目--> repository-->branches-->project setting
+注意 能push 就能merge ，相应的权限把握好（master分支设置只能masters可以合并）

@@ -1,0 +1,58 @@
+nohup 的用途就是让提交的命令忽略 hangup 信号，那什么叫做hangup信号？这里给出了答案
+0：标准输入 1：标准输出，2：标准错误
+
+--本地手动构建
+1.新建job并配置
+	General --可不配
+	源码管理 --按项目所使用的源码管理选择，课程使用git
+		填写项目地址，Credentials选择配置好的认证
+		选择分支  可以是项目中的任意分支
+	构建触发器
+		触发远程构建 (例如,使用脚本)
+		其他工程构建后触发 -- 在Jenkins中其他项目构建之后，触发本项目构建，一般用于项目间有依赖关系，一方修改，另一方需实时感知
+		定时构建 --定时进行构建，无论是否有变更 （类似cron表达式）
+		GitHub hook trigger for GITScm polling --github的hook触发构建,一般不使用
+		轮询 SCM --设置定时检查源码变更，有更新就构建（类似cron表达式）
+
+		定时表达式含义
+			* * * * * --五个字段
+			分 时 天 月 周
+	构建环境
+		Delete workspace before build starts：在构建之前清空工作空间
+		Abort the build if it's stuck：如果构建出现问题则终止构建
+		Add timestamps to the Console Output：给控制台输出增加时间戳
+		Use secret text(s) or file(s)：使用加密文件或者文本
+	执行shell
+	#!/bin/bash
+	mv target/*.jar /root/demo/
+	cd /root/demo
+	BUILD_ID= 
+	java -jar springboot-demo.jar >log 2>&1 &
+
+--本地gitlab触发构建
+2.配置gitlab webhook
+	系统管理员登陆
+		http://192.168.56.101:8888/admin/application_settings
+	settings
+		Outbound requests
+		勾选Allow requests to the local network from hooks and services
+5.sonarqube整合
+		#required metadata
+		#projectKey项目的唯一标识，不能重复
+		sonar.projectKey=xdclass
+		sonar.projectName=xdclass
+
+		sonar.projectVersion=1.0 
+		sonar.sourceEncoding=UTF-8
+		sonar.modules=java-module
+
+		# Java module
+		java-module.sonar.projectName=test
+		java-module.sonar.language=java
+		# .表示projectBaseDir指定的目录
+		java-module.sonar.sources=src
+		java-module.sonar.projectBaseDir=.
+		java-module.sonar.java.binaries=target/
+
+
+

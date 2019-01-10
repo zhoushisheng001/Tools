@@ -1,0 +1,22 @@
+1.linux必要配置
+	在防火墙里开放http跟ssh端口
+		yum install lokkit
+		yum install curl openssh-server openssh-clients postfix cronie -y
+		service postfix start
+		chkconfig postfix on
+		lokkit -s http -s ssh
+	添加gitlab仓库，并安装
+		curl -sS http://packages.gitlab.cc/install/gitlab-ce/script.rpm.sh | sudo bash
+		sudo yum install gitlab-ce
+	启动gitlab
+		gitlab-ctl reconfigure
+		vim /etc/gitlab/gitlab.rb 
+		修改external_url为gitlab机子的ip+要使用的端口 如：http://192.168.56.101:8888
+		修改nginx['listen_port'] = 8888
+		重新配置gitlab并重启		
+		gitlab-ctl reconfigure
+		gitlab-ctl restart
+	配置防火墙
+	    vim /etc/sysconfig/iptables
+	    -A INPUT -m state --state NEW -m tcp -p tcp --dport 8888 -j ACCEPT
+	    service iptables restart

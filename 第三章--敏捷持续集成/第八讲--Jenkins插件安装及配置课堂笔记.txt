@@ -1,0 +1,24 @@
+插件安装：
+	系统管理--》插件管理
+	1.安装Maven Integration plugin 
+	2.安装SonarQube Scanner for Jenkins
+	3.Publish Over SSH --发布到远程服务器
+系统配置：
+	系统管理--》全局工具配置
+	1.配置jdk
+	2.配置maven
+	3.配置sonar
+	4.邮件配置
+		系统管理--》系统设置--》邮件通知--》
+		smtp服务器 smtp.qq.com
+		用户默认邮件后缀 @qq.com
+		勾选ssl
+		Reply-To Address发件者邮箱
+		之后测试一下配置，无误即可
+	5.配置gitlab授权
+		Credentials--》system--》Global credentials 
+	6.配置免密登陆
+		yum -y install openssh-clients
+	    ssh-keygen -t rsa -- 产生私钥
+	    配置git登陆
+	    将Jenkins所在机子的公钥 more ~/.ssh/id_rsa.pub 的内容拷贝到gitlab项目上

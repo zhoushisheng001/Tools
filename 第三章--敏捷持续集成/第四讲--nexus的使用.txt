@@ -1,0 +1,88 @@
+1.仓库类型
+	proxy:代理仓库，用于代理远程仓库
+	group:仓库组，通常包含了多个代理仓库和宿主仓库，在项目中只要引入仓库组就可以下载到代理仓库和宿主仓库中的包
+	hosted:宿主仓库，内部项目、付费jar
+		releases  发布内部release版本的仓库
+		snapshots 发布内部snapshots版本的仓库
+		third 自建第三方jar
+2.配置代理
+	选择阿里云http://maven.aliyun.com/nexus/content/groups/public/
+3.本地maven配置
+	修改maven目录下的conf/setting.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <pluginGroups/>
+  <proxies/>
+  <servers>
+    <server>
+      <id>xdclass-releases</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
+    <server>
+      <id>xdclass-snapshots</id>
+      <username>admin</username>
+      <password>admin123</password>
+    </server>
+  </servers>
+  <mirrors/>
+  <profiles>
+    <profile>
+      <id>xdclass</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <!-- 私有库地址-->
+      <repositories>
+        <repository>
+          <id>xdclass</id>
+          <url>http://192.168.56.101:8081/repository/maven-public/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <!--插件库地址-->
+      <pluginRepositories>
+        <pluginRepository>
+          <id>xdclass</id>
+          <url>http://192.168.56.101:8081/repository/maven-public/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>xdclass</activeProfile>
+  </activeProfiles>
+</settings>
+
+10.修改编辑器中maven的配置，将配置指向setting.xml
+11.修改pom
+  <!--pom.xml 远程仓库的配置  id要跟本地maven的setting.xml相同 -->
+  <distributionManagement>
+        <repository>
+            <id>xdclass-releases</id>
+            <name>Ruizhi Release Repository</name>
+            <url>http://192.168.56.101:8081/repository/maven-releases/</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>xdclass-snapshots</id>
+            <name>Ruizhi Snapshot Repository</name>
+            <url>http://192.168.56.101:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+12.测试是否nexus搭建成功
+	pom添加本地没有的依赖，看nexus会不会代理
+	mvn deploy 看是否成功推送至nexus

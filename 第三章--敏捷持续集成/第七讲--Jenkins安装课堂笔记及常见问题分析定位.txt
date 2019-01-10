@@ -1,0 +1,34 @@
+1.前置条件
+	JDK、tomcat
+2.安装tomcat
+	下载地址： https://tomcat.apache.org/download-90.cgi
+	useradd tomcat --新增一个名为tomcat的用户
+	passwd tomcat --给tomcat用户设置密码
+	tar -zxvf apache-tomcat-9.0.8.tar.gz -C /usr/local/ --将tomcat解压到相应目录
+	chown -R tomcat:tomcat /usr/local/apache-tomcat-9.0.8 --将整个目录的所属权转移给tomcat用户、tomcat组
+
+3.安装Jenkins
+	下载地址： https://jenkins.io/download/
+	将Jenkins上传到tomcat的webapp目录
+	chown  tomcat:tomcat Jenkins.war 修改Jenkinswar包为tomcat用户所有
+	启动tomcat
+	--通过浏览器无法访问tomcat
+		1.看tomcat是否存活  ps aux | grep tomcat 
+		2.看端口  netstat -tlun 看到8080端口已经使用了
+		3.检查防火墙  vim /etc/sysconfig/iptables 加入8080
+		4.查看tomcat日志  --》出现异常，地址已经被使用
+		5.关闭tomcat --》 查看端口（步骤2）--》发现8080依旧存在
+		6.断定8080被其他程序占用 --》netstat -tlunp | grep 8080 -->看到被gitlab相关的程序使用了
+		7.修改tomcat端口 vim conf/server.xml ,找到8080 --》将8080改成不被占用的9999端口
+		8.防火墙开启9999端口
+		9.可以正常访问tomcat
+	浏览器打开http://192.168.56.101:9999/jenkins
+	more /home/tomcat/.jenkins/secrets/initialAdminPassword
+	将里面的内容复制粘贴
+	此时发现提示Jenkins离线
+	访问 http://192.168.56.101:9999/jenkins/pluginManager/advanced
+	拉到最底下，将https--》改成http，之后提交
+	重启tomcat
+	浏览器打开http://192.168.56.101:9999/jenkins
+	more /home/tomcat/.jenkins/secrets/initialAdminPassword
+	选择默认安装

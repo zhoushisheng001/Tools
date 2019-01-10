@@ -1,0 +1,24 @@
+1.下载nexus
+	https://www.sonatype.com/download-oss-sonatype
+2.上传到服务器/root/
+3.解压
+	tar -zxvf nexus-3.12.1-01-unix.tar.gz -C /usr/local/
+4.修改配置文件 
+	vim /usr/local/nexus-3.12.1-01/etc/nexus-default.properties
+		修改对应的端口
+	修改防火墙
+		vim  /etc/sysconfig/iptables
+		-A INPUT -m state --state NEW -m tcp -p tcp --dport 8081 -j ACCEPT
+
+5.浏览器打开并登陆
+	http://192.168.56.102:8081/
+	账号admin
+	密码 admin123
+	System Requirement: max file descriptors [4096] likely too low, increase to at least [65536].
+6.修改ulimit
+ 	vim /etc/security/limits.conf
+ 	新增
+ 	* soft nofile 65535
+	* hard nofile 65535
+7.配置开机自启动
+	su - nexus -c '/usr/local/nexus-3.12.1-01/bin/nexus start'

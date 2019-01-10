@@ -1,0 +1,21 @@
+1.开启注册邮箱验证
+	admin area --》setting--》Sign-up restrictions--》勾选Send confirmation email on sign-up
+2.当前用户
+	root、123、wiggin
+3.创建组
+	首页->create a group(http://192.168.56.101:8888/dashboard/groups)
+	访问级别 
+	Private：只有组成员才能看到
+	Internal：只要登录的用户就能看到
+	Public：所有人都能看到
+
+Guest：可以创建issue、发表评论，不能读写版本库
+Reporter：可以克隆代码，不能提交
+Developer：可以克隆代码、开发、提交、push
+Master：可以创建项目、添加tag、保护分支、添加项目成员、编辑项目
+Owner：可以设置项目访问权限 - Visibility Level、删除项目、迁移项目、管理组成员
+
+1. 键入命令：ssh-keygen -t rsa
+2. 提醒你输入key的名称，输入如id_rsa 
+3. 在C:\Users\用户\.ssh下产生两个文件：id_rsa和id_rsa.pub 
+4. 用记事本打开id_rsa.pub文件，复制内容，在gitlab.com的网站上到ssh密钥管理页面，添加新公钥，随便取个名字，内容粘贴刚才复制的内容。 

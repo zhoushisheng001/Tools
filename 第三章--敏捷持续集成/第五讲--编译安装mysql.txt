@@ -1,0 +1,69 @@
+linux下安装mysql的方式
+	yum 安装简单
+	自行编译安装 自由
+mysql下载
+	http://mirrors.sohu.com/mysql/MySQL-5.7/mysql-5.7.17.tar.gz
+编译安装mysql
+	1.解压
+		tar -zxvf mysql-5.7.17.tar.gz
+	2.安装相应的依赖
+		yum install make cmake gcc gcc-c++ bison bison-devel ncurses ncurses-devel autoconf automake wget
+	3.下载boost
+		mkdir /usr/local/boost
+		cd /usr/local/boost
+		wget http://www.sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz --no-check-certificate
+	4.添加用户并创建相应目录存放数据
+		useradd mysql
+		cd /home/mysql/
+		mkdir data logs temp
+		chown -R  mysql:mysql data logs temp
+	4.执行cmake    （先 cd /usr/local/my...）就是自己加压后的mysql文件夹里面
+		cmake \
+		-DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
+		-DMYSQL_UNIX_ADDR=/usr/local/mysql/mysql.sock \
+		-DDEFAULT_CHARSET=utf8 \
+		-DDEFAULT_COLLATION=utf8_general_ci \
+		-DWITH_MYISAM_STORAGE_ENGINE=1 \
+		-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+		-DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+		-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+		-DWITH_MEMORY_STORAGE_ENGINE=1 \
+		-DWITH_READLINE=1 \
+		-DENABLED_LOCAL_INFILE=1 \
+		-DMYSQL_DATADIR=/home/mysql/data \
+		-DMYSQL_USER=mysql \
+		-DMYSQL_TCP_PORT=3306 \
+		-DWITH_BOOST=/usr/local/boost
+	5.编译安装 （都是在mysql解压后的文件夹里面操作）
+		make  进行编译
+		make install 安装
+	6.修改mysql安装目录权限
+		chown -R mysql:mysql /usr/local/mysql
+	7.初始化mysql   
+	mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/home/mysql/data
+	产生密码 eqK:iH;+S6dC
+	8.删除/etc下的my.cnf  
+		rm /etc/my.cnf
+	9.复制服务启动脚本
+		cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
+	10.启动 MySQL 服务:
+		service mysql start
+	11.设置mysql服务开机自启动
+		chkconfig mysql on
+	12.登陆mysql并设置可远程登陆 
+		mysql -u root -p 回车
+		粘贴初始化时产生的临时密码 eqK:iH;+S6dC
+		GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'xdclass' WITH GRANT OPTION;此时不让改，提示要先设置下密码
+		SET PASSWORD = PASSWORD('xdclass');
+		ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;
+		flush privileges;
+		exit；
+		重新登陆，使用刚刚设置的密码
+		mysql -u root -p
+		登陆完成之后，即可设置允许远程登陆
+		GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'xdclass' WITH GRANT OPTION;
+	13.开启防火墙端口
+		vim /etc/sysconfig/iptables
+		加入
+		-A INPUT -m state --state NEW -m tcp -p tcp --dport 3306 -j ACCEPT
+	14.使用连接工具测试远程连接

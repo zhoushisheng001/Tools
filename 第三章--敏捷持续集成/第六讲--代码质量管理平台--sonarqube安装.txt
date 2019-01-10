@@ -1,0 +1,33 @@
+前置依赖
+	mysql 5.6 or 5.7
+	jdk 1.8
+1.下载
+	https://www.sonarqube.org/
+2.安装unzip并解压sonarqube并移动到/usr/local
+	yum install unzip
+	unzip sonarqube-6.7.4.zip
+	mv sonarqube-6.7.4 /usr/local/
+3.mysql里新增数据库
+	CREATE DATABASE sonar DEFAULT CHARACTER SET utf8;
+4.修改sonarqube相应的配置
+	vim /usr/local/sonarqube-6.7.4/conf/sonar.properties
+	sonar.jdbc.username=root
+	sonar.jdbc.password=wiggin
+	sonar.jdbc.url=改成步骤4创建的库名
+	sonar.web.context=/sonar
+	sonar.web.host=0.0.0.0
+5.新增用户，并将目录所属权赋予该用户
+	useradd sonar
+	chown -R sonar:sonar sonarqube-6.7.4/
+6.启动
+	su soanr
+	/usr/local/sonarqube-6.7.4/bin/linux-x86-64/sonar.sh start
+7.界面访问
+	http://192.168.56.101:9000/sonar
+	开启防火墙
+	vim /etc/sysconfig/iptables
+	新增9000端口
+	在界面产生令牌，并将项目代码使用以下命令进行提交由sonarqube进行分析，完成后，查看相应的分析结果
+mvn sonar:sonar \
+  -Dsonar.host.url=http://192.168.56.101:9000/sonar \
+  -Dsonar.login=830edadfcb2c6326b1c6e2110f43c9f74d008450
