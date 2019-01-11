@@ -1,3 +1,5 @@
+git remote add origin https://github.com/zhoushisheng001/Tools.git （自己加上git上传）
+
 linux下安装mysql的方式
 	yum 安装简单
 	自行编译安装 自由
