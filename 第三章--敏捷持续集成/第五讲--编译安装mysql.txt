@@ -41,6 +41,11 @@ mysql下载
 		make install 安装
 	6.修改mysql安装目录权限
 		chown -R mysql:mysql /usr/local/mysql
+		vim /etc/profile (添加配置文件)
+		PATH=/usr/local/mysql/bin:/usr/local/mysql/lib:$PATH
+                export PATH
+	        (加载配置文件)	
+		source /etc/profile
 	7.初始化mysql   
 	mysqld --initialize --user=mysql --basedir=/usr/local/mysql --datadir=/home/mysql/data
 	产生密码 eqK:iH;+S6dC
