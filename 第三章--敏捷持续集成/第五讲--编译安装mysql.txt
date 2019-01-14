@@ -61,10 +61,10 @@ mysql下载
 		mysql -u root -p 回车
 		粘贴初始化时产生的临时密码 eqK:iH;+S6dC
 		GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'xdclass' WITH GRANT OPTION;此时不让改，提示要先设置下密码
-		SET PASSWORD = PASSWORD('xdclass');
+		SET PASSWORD = PASSWORD('xdclass'); (在命令里面需要添加";")
 		ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;
 		flush privileges;
-		exit；
+		exit;
 		重新登陆，使用刚刚设置的密码
 		mysql -u root -p
 		登陆完成之后，即可设置允许远程登陆
