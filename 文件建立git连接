@@ -8,3 +8,6 @@ git push -u origin master
 …or push an existing repository from the command line
 git remote add origin https://github.com/zhoushisheng001/Test.git
 git push -u origin master
+
+mongodb学习网站
+http://www.runoob.com/mongodb/mongodb-linux-install.html
