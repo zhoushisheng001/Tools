@@ -1,0 +1,2 @@
+根据调价查看日志文件指定行  grep -C5 "修改包车管理主表入参charteredCarManagerUpdate" tms-logistics-start.log 
+tail -f basic-data-start.log  -- > tail -f  (日志文件名) 动态输出日志
