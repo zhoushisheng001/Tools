@@ -1,2 +1,11 @@
 根据调价查看日志文件指定行  grep -C5 "修改包车管理主表入参charteredCarManagerUpdate" tms-logistics-start.log 
 tail -f basic-data-start.log  -- > tail -f  (日志文件名) 动态输出日志
+ps -ef | grep basic-data
+java -jar basic-data.jar (启动服务)
+
+create index（前面固定写法） picking_id_index(索引名称自己定义) on picking_code（表名称） (picking_id) 表对应的添加的索引字段;
+
+修改字段长度命令
+alter table 表名 modify column 列名 类型(要修改的长度);
+alter table bank_branch_number modify column bankId varchar(10);
+
