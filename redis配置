@@ -20,3 +20,95 @@ spring.redis.commandTimeout=5000
 spring.redis.cluster.nodes=10.100.50.23:6380,10.100.50.23:6381,10.100.50.23:6382,10.100.50.23:6383,10.100.50.23:6384,10.100.50.23:638
 看RedisProperties看到对应的配置文件单机哨兵和集群的配置方式
 
+自己可以生成redis集成工具
+package com.zxy.demo.redis;
+2
+3
+import org.springframework.context.annotation.Bean;
+4
+import org.springframework.context.annotation.Configuration;
+5
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+6
+import org.springframework.data.redis.core.RedisTemplate;
+7
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+8
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+9
+10
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+11
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+12
+import com.fasterxml.jackson.databind.ObjectMapper;
+13
+14
+/**
+15
+ * redis配置类
+16
+ * @author zhoushisheng
+17
+ * @date   2018年6月6日
+18
+ * 
+19
+ */
+20
+@Configuration
+21
+public class RedisConfig {
+22
+    
+23
+    @Bean
+24
+    @SuppressWarnings("all")
+25
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+26
+        RedisTemplate<String, Object> template = new RedisTemplate<String, Object>();
+27
+        template.setConnectionFactory(factory);
+28
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+29
+        ObjectMapper om = new ObjectMapper();
+30
+        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+31
+        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+32
+        jackson2JsonRedisSerializer.setObjectMapper(om);
+33
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+34
+        // key采用String的序列化方式
+35
+        template.setKeySerializer(stringRedisSerializer);
+36
+        // hash的key也采用String的序列化方式
+37
+        template.setHashKeySerializer(stringRedisSerializer);
+38
+        // value序列化方式采用jackson
+39
+        template.setValueSerializer(jackson2JsonRedisSerializer);
+40
+        // hash的value序列化方式采用jackson
+41
+        template.setHashValueSerializer(jackson2JsonRedisSerializer);
+42
+        template.afterPropertiesSet();
+43
+        return template;
+44
+    }
+45
+46
+}
+
+
+
+
