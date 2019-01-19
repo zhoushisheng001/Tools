@@ -63,6 +63,8 @@ public class RedisConfig {
     }
 }
 
+//创建线程池
+ExecutorService poolExe = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
 
 
