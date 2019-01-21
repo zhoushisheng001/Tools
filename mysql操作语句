@@ -1,0 +1,26 @@
+创建索引
+create index id_index on picking (id);
+create index picking_id_index on picking_code (picking_id);
+
+create index id_index on picking_area (id);
+create index picking_area_id_index on picking_area_code (picking_area_id);
+create index operation_type_index on picking_area_code (operation_type);
+create index picking_area_id_index on picking_area_authorized_user (picking_area_id);
+
+ALTER TABLE `pickup_take_area`
+ADD INDEX `idx_point_id` (`point_id`) USING BTREE ;
+
+创建主键为自增长
+ALTER TABLE agency_quotation_discarded CHANGE id id BIGINT AUTO_INCREMENT;
+
+
+修改和增加字段
+alter table node add legal_type varchar(2) DEFAULT NULL;(修改)
+alter table node modify column legal_type varchar(2) DEFAULT NULL COMMENT '是否合规(空,10:是,basic_data_yes_no)';(新增)
+
+alter table send_order modify column city_codes varchar(512) DEFAULT NULL COMMENT '工资发放月份'; -- 修改字段列的长度
+
+alter table point add config_record_id bigint(20) DEFAULT NULL COMMENT '录单维护ID(新增)';
+alter table point add config_record_name varchar(256) DEFAULT NULL COMMENT '点部配置-录单名称(新增)';
+
+
