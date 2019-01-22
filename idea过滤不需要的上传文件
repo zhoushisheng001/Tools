@@ -1,0 +1,4 @@
+Settings→Editor→File Types
+在下方的忽略文件和目录（Ignore files and folders）中添加自己需要过滤的内容
+
+下图为我自己添加过滤的内容，例如：*.iml;*.idea;*.gitignore;*.sh;*.classpath;*.project;*.settings;target;
