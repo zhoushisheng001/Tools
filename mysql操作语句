@@ -10,6 +10,15 @@ create index picking_area_id_index on picking_area_authorized_user (picking_area
 ALTER TABLE `pickup_take_area`
 ADD INDEX `idx_point_id` (`point_id`) USING BTREE ;
 
+-- 下面两种比较推荐
+alter table tms.chartered_car_dispatch add index idx_car_number (car_number);
+alter table tms.chartered_car_manager add index idx_car_number (car_number);
+
+use `tms`;
+ALTER TABLE chartered_car_dispatch ADD INDEX `idx_car_number` (`car_number`) USING BTREE;
+ALTER TABLE chartered_car_manager ADD INDEX `idx_car_number` (`car_number`) USING BTREE;
+
+
 创建主键为自增长
 ALTER TABLE agency_quotation_discarded CHANGE id id BIGINT AUTO_INCREMENT;
 
