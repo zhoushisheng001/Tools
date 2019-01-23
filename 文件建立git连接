@@ -15,3 +15,8 @@ http://www.runoob.com/mongodb/mongodb-linux-install.html
 github 账户
 zhoushisheng001
 nizi.19921220
+
+获得服务上的分支
+git fetch
+git checkout origin/fix_base_data 获得服务器上的分支
+git branch -- 查看本地有那些分支
