@@ -1,0 +1,218 @@
+package com.kyexpress.erp.basic.data.provider.redis;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+import com.kyexpress.erp.basic.data.api.BasicDataInterface;
+import com.kyexpress.erp.basic.data.api.model.Node;
+import com.kyexpress.framework.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+
+/**
+ * @author zhoushisheng
+ * @CreationDate 2018-11-12
+ * @desc 缓存加载的摸版数据类
+ */
+@Service
+public class CacheTemplateService {
+
+      private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+      @Autowired
+      private RedisTemplate redisTemplate;
+
+
+    /**
+     * 根据主键批量查询缓存数据
+     * @param type
+     * @param keys
+     * @param <K>
+     * @param <T>
+     * @return
+     */
+      public <K,T> Map<K,T> get(TypeReference<T> type, K... keys){
+          ValueOperations valueOperations = redisTemplate.opsForValue();
+          Map<K,T> returnMap = new HashMap<>();
+          for (K key : keys) {
+              String cacheData = String.valueOf(valueOperations.get(key));
+              if (StringUtils.isNotEmpty(cacheData) && !"null".equals(cacheData)) {
+                  T t = JSONObject.parseObject(cacheData, type);
+                  returnMap.put(key,t);
+              }
+          }
+         return returnMap;
+      }
+
+    /**
+     * 模板加载数据方法
+     * @param key              主键
+     * @param model            模块比如点部(point)
+     * @param time             过期时间
+     * @param timeUnit        过期时间单位
+     * @param type            返回数据类型
+     * @param cacheLoadable  自己实现接口
+     * @param <K>             主键
+     * @param <T>             返回数据泛型
+     * @return
+     */
+      public <K,T> T cacheExecute (K key, String model, Long time, TimeUnit timeUnit, TypeReference<T> type, CacheLoadable<K,T> cacheLoadable) {
+          logger.info("从缓存里面获得数据入参key：" + key + "，model：" + model);
+          String cacheData = ""; //缓存返回数据
+          T loadData = null;//查询数据库获得的数据
+          String keyStr = this.buildKey(key,model);
+          ValueOperations valueOperations = redisTemplate.opsForValue();
+          try{
+               cacheData = String.valueOf(valueOperations.get(keyStr));
+               logger.info("从缓存里面获得的数据cacheData：" + cacheData + "，keyStr：" + keyStr);
+               if (StringUtils.isNotEmpty(cacheData) && !"null".equals(cacheData)) return JSONObject.parseObject(cacheData,type);
+               synchronized (this) {
+                  cacheData = String.valueOf(valueOperations.get(keyStr));
+                  if (StringUtils.isEmpty(cacheData) || "null".equals(cacheData) ) {
+                      logger.info("缓存里面不存在从DB里面查询数据......");
+                      loadData = cacheLoadable.load(key);
+                      if (loadData != null) {
+                          valueOperations.set(keyStr, JSON.toJSONString(loadData),time,timeUnit);
+                      }
+                  }
+               }
+          } catch (Exception e) {
+             logger.error(e.getMessage(),e);
+             loadData = cacheLoadable.load(key);
+          }
+          return loadData;
+      }
+
+    /**
+     * 方法重载默认为30m
+     * @param key
+     * @param model
+     * @param type
+     * @param cacheLoadable
+     * @param <K>
+     * @param <T>
+     * @return
+     */
+    public <K,T> T cacheExecute (K key, String model, TypeReference<T> type, CacheLoadable<K,T> cacheLoadable) {
+        return this.cacheExecute(key,model,30L, TimeUnit.MINUTES,type,cacheLoadable);
+    }
+
+    /**
+     * 修改缓存数据
+     * @param keys
+     * @param model
+     * @param time
+     * @param timeUnit
+     * @param data
+     * @param <K>
+     * @param <T>
+     */
+     public <K,T> void set (String model, Long time, TimeUnit timeUnit,T data,K... keys) {
+         for (K key : keys) {
+             String keyStr = this.buildKey(key, model);
+             ValueOperations valueOperations = redisTemplate.opsForValue();
+             valueOperations.set(keyStr, JSON.toJSONString(data),time,timeUnit);
+         }
+     }
+
+    /**
+     * 方法重载默认有效时间为30m
+     * @param model
+     * @param data
+     * @param keys
+     * @param <K>
+     * @param <T>
+     */
+    public <K,T> void set (String model,T data,K... keys) {
+        this.set(model,30L,TimeUnit.MINUTES,data,keys);
+    }
+
+    /**
+     * 批量修改缓存里面的数据状态
+     * @param model
+     * @param type
+     * @param dataName
+     * @param dataValue
+     * @param keys
+     * @param <K>
+     * @param <T>
+     */
+    public <K,T> void set (String model,TypeReference<T> type,String dataName,String dataValue,K... keys) {
+        try {
+             Map<K, T> ktMap = this.get(type, keys);
+             if (!CollectionUtils.isEmpty(ktMap)) {
+             StringBuffer dataNameStr = new StringBuffer("set");
+             dataNameStr.append(dataName.substring(0, 1).toUpperCase());
+             dataNameStr.append(dataName.substring(1,dataName.length()));
+             for (Map.Entry<K,T> entry : ktMap.entrySet()) {
+                 T value = entry.getValue();
+                 Class clazz = value.getClass();
+                 Method method = clazz.getMethod(dataNameStr.toString(),String.class);
+                 method.invoke(value,dataValue);
+                 this.set(model,entry.getKey(),value);
+             }
+          }
+        } catch (Exception e) {}
+    }
+
+
+    public static  <T> void data (TypeReference<T> type,String dataName,String dataValue,T data) throws Exception{
+        Class clazz = data.getClass();
+        System.out.println(clazz);
+        StringBuffer dataNameStr = new StringBuffer("set");
+        dataNameStr.append(dataName.substring(0, 1).toUpperCase());
+        dataNameStr.append(dataName.substring(1,dataName.length()));
+        Method method = clazz.getMethod(dataNameStr.toString(),String.class);
+        method.invoke(data,dataValue);
+        System.out.println(JSON.toJSONString(data));
+    }
+
+    public static void main(String[] args) throws Exception{
+        Node de = new Node();
+        de.setId(123456L);
+        data(new TypeReference<Node>(){},"nodeName","jianxi",de);
+    }
+
+
+
+    /**
+     * 根据keys批量删除缓存数据
+     * @param model
+     * @param keys
+     */
+    public <K> void delete(String model,K... keys) {
+        List<String> result = new ArrayList<>();
+        for (K key : keys) {
+            if (key != null) {
+                result.add(this.buildKey(key,model));
+            }
+        }
+        redisTemplate.delete(result);
+    }
+
+    /**
+     * 创建key
+     * @param key
+     * @param model
+     * @param <K>
+     * @return
+     */
+    private <K> String buildKey (K key, String model) {
+        StringBuffer keyStr = new StringBuffer(BasicDataInterface.SERVICE_NAME + ":");
+        keyStr.append(model).append(":" + key);
+        return String.valueOf(keyStr);
+    }
+}
