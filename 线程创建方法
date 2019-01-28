@@ -1,0 +1,50 @@
+  int thrednum = (number % Constants.TAKE_AREA_THIRTY == 0) ? (number / Constants.TAKE_AREA_THIRTY) : (number / Constants.TAKE_AREA_THIRTY + 1);
+            //创建线程池
+            ExecutorService service = Executors.newFixedThreadPool(thrednum);
+            BlockingQueue<Future<List<PickupTakeAreaAppInfoBO>>> queue = new LinkedBlockingQueue<>();
+            //异步启动线程调用分单接口
+            for (int i = 0; i < thrednum; i++) {
+                int startIndex = i * Constants.TAKE_AREA_THIRTY;
+                int maxIndex = startIndex + Constants.TAKE_AREA_THIRTY;
+                if(maxIndex > number){
+                   maxIndex = number;
+                }
+                List<PickupTakeAreaAppInfoBO> pickupTakeAreaRequest = list.subList(startIndex, maxIndex);
+                Future<List<PickupTakeAreaAppInfoBO>> future = service.submit(getBranchAddressDetails(pickupTakeAreaRequest,accessKey));
+                queue.add(future);
+            }
+            int queueSize = queue.size();
+            resultList = new ArrayList<>();
+            //聚合每个分单地址数据
+            for (int i = 0; i < queueSize; i++) {
+                try {
+                      List<PickupTakeAreaAppInfoBO> pickupTakeAreaList = queue.take().get();
+                      if(!CollectionUtils.isEmpty(pickupTakeAreaList)){
+                          resultList.addAll(pickupTakeAreaList);
+                      }
+                }catch (Exception e) {
+                     logger.error("获得分单后的线程里面数据解析异常",e);
+                }
+            }
+            //关闭线程池
+            service.shutdown();
+        }
+        
+        
+            /**
+     * 线程实现逻辑
+     * @param pickupTakeAreaAppInfoBOS
+     * @param accessKey
+     * @return
+     */
+    private Callable<List<PickupTakeAreaAppInfoBO>> getBranchAddressDetails(List<PickupTakeAreaAppInfoBO> pickupTakeAreaRequest, String accessKey) {
+        Callable<List<PickupTakeAreaAppInfoBO>> callable = new Callable<List<PickupTakeAreaAppInfoBO>>() {
+            @Override
+            public List<PickupTakeAreaAppInfoBO> call() throws Exception {
+                List<PickupTakeAreaAppInfoBO> retList = getSendAddressDetails(pickupTakeAreaRequest, accessKey);
+                getCollectAddressDetails(retList,pickupTakeAreaRequest, accessKey);
+                return retList;
+            }
+        };
+        return callable;
+    }
