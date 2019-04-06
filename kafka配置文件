@@ -1,0 +1,2 @@
+查看zookeeper，kafka文件信息 ./kafka-topics.sh --zookeeper 192.168.1.111:2181 --list
+./kafka-topics.sh --zookeeper 192.168.1.111:2181 --help (通过查找帮助文档看指令)
