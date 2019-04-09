@@ -32,4 +32,11 @@ alter table send_order modify column city_codes varchar(512) DEFAULT NULL COMMEN
 alter table point add config_record_id bigint(20) DEFAULT NULL COMMENT '录单维护ID(新增)';
 alter table point add config_record_name varchar(256) DEFAULT NULL COMMENT '点部配置-录单名称(新增)';
 
+根据查出的数据插入数据库
+insert into B
+(col1,col2,col3,...,coln,colDate)
+select
+col1,col2,col3,...,coln,sysdate
+from A;
+
 
