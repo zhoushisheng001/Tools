@@ -17,10 +17,10 @@ alter table bank_branch_number modify column bankId varchar(10);
 echo "start ..."  （echo是控制台输出命令）
 echo "over..."
 保存退出后给该文件授权让可以执行
-chmod u+x test.sh
+chmod u+x test.sh  （或者 chmod 744 test.sh）
 下面就可以执行了
 ./test.sh
 编辑定时任务执行 crontab -e
 查看定时任务 crontab -l
 */1 * * * * ls -l /etc >> /usr/local/a.txt
-删除当前用户的所有执行任务 crontab -r
+删除
