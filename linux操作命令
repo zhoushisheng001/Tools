@@ -23,4 +23,4 @@ chmod u+x test.sh  （或者 chmod 744 test.sh）
 编辑定时任务执行 crontab -e
 查看定时任务 crontab -l
 */1 * * * * ls -l /etc >> /usr/local/a.txt
-删除
+删除 crontab -r
