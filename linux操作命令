@@ -9,3 +9,15 @@ create index（前面固定写法） picking_id_index(索引名称自己定义) 
 alter table 表名 modify column 列名 类型(要修改的长度);
 alter table bank_branch_number modify column bankId varchar(10);
 
+添加执行的shell脚本
+首先创建.sh文件如(test.sh)
+在里面填写对应的内容开始必须已 #!/bin/bash 开头
+内容如：
+#!/bin/bash
+echo "start ..."  （echo是控制台输出命令）
+echo "over..."
+保存退出后给该文件授权让可以执行
+chmod u+x test.sh
+下面就可以执行了
+./test.sh
+
