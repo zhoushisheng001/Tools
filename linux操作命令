@@ -24,3 +24,5 @@ chmod u+x test.sh  （或者 chmod 744 test.sh）
 查看定时任务 crontab -l
 */1 * * * * ls -l /etc >> /usr/local/a.txt
 删除 crontab -r
+date (获得当前系统时间) , cal (获得当前系统日历)
+如果shell脚本没有给权限通过前面加上sh也是可以执行的 比如 (sh ./test.sh)  
