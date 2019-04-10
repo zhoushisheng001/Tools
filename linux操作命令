@@ -20,4 +20,7 @@ echo "over..."
 chmod u+x test.sh
 下面就可以执行了
 ./test.sh
-
+编辑定时任务执行 crontab -e
+查看定时任务 crontab -l
+*/1 * * * * ls -l /etc >> /usr/local/a.txt
+删除当前用户的所有执行任务 crontab -r
