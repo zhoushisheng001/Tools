@@ -1,0 +1,232 @@
+//定义存储过程 --这里面就定义了输入的条件和返回的结果(输出在参数定义加上out)
+create or replace procedure pag_add(p1 varchar2,p2 varchar2,p3 out varchar2)  
+   as
+    begin
+          p3:=p1+p2;
+      end;
+
+//定义函数
+create or replace function fun_add(p1 number ,p2 number)
+　　return number
+　　as
+begin
+  　　　　return p1+p2;
+  end;
+  
+ 
+定义对应的调用接口 
+package cn.et.mybatis.lesson02.func;
+import java.util.List;
+import java.util.Map;
+
+public interface CallMapper {
+      public void queryEmp(Map map);
+        //查询存储过程的方法
+        public void callProcedure(Map map);
+        //查询函数的方法
+        public void callFunction(Map map);
+}
+
+对应的mybatis->xml ==> statementType="CALLABLE" 表明调用的是存储过程
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- 此文件主要用于编写sql语句
+      namespace是为了解决相同名字的sql操作问题
+   -->
+<mapper namespace="cn.et.mybatis.lesson02.func.CallMapper">
+    <!-- statementType 声明指向的是什么类型，其中CALLABLE是执行存储过程和函数的-->
+    <select id="queryEmp" parameterType="map" statementType="CALLABLE">
+    {
+        call pag_add(
+            #{p1,mode=IN,jdbcType=NUMERIC},
+            #{p2,mode=IN,jdbcType=NUMERIC},
+            #{p3,mode=OUT,jdbcType=NUMERIC}
+        )
+    }
+    </select>
+    <!-- 定义存储过程 -->
+    <select id="callProcedure" parameterType="map" statementType="CALLABLE" >
+      {
+         call prg_add(
+               #{p1,mode=IN,jdbcType=NUMERIC},
+               #{p2,mode=IN,jdbcType=NUMERIC},
+               #{p3,mode=OUT,jdbcType=NUMERIC}
+         )
+      }
+  </select>
+  <!-- 定义函数 -->
+  <select id="callFunction" parameterType="map" statementType="CALLABLE">
+          {
+              #{p3,mode=OUT,jdbcType=NUMERIC}=call fun_add(
+                  #{p1,mode=IN,jdbcType=NUMERIC},
+               #{p2,mode=IN,jdbcType=NUMERIC}
+              )
+          }
+  </select>
+</mapper>
+
+驱动配置文件
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 说明mybatis的根节点 -->
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--mybatis的根标签configuration -->
+<configuration>
+    <!-- 资源文件的路径配置  注：cn前面不能用/否则会抛出异常-->
+    <properties resource="cn/et/mybatis/lesson02/jdbc.properties">
+    </properties>
+    <!-- 配置连接数据库的环境，（开发环境） -->
+  <environments default="development">
+    <environment id="development">
+    <!-- 事务交给jdbc管理，Conection(事务) commit(提交) rollback(回滚)  -->
+      <transactionManager type="JDBC"/>
+      <!-- 数据源 用来连接数据库（包含四要素，driver,url,username,password） -->
+      <dataSource type="POOLED">
+        <property name="driver" value="${driverClass}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${userAccount}"/>
+        <property name="password" value="${password}"/>
+      </dataSource>
+    </environment>
+  </environments>
+  <!-- 包含隐射文件主要用于编写sql语句 -->
+  <mappers>
+      <!-- 隐射的资源文件  隐射文件主要编写sql语句 -->
+    <mapper resource="cn/et/mybatis/lesson02/func/call_mapper.xml"/>
+  </mappers>
+</configuration>
+
+测试调用代码
+package cn.et.mybatis.lesson02.func;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.junit.Test;
+
+public class TestMyBatis {
+    //封装session的返回
+    public static SqlSession getSession(){
+        String resource = "/cn/et/mybatis/lesson02/mybatis.xml";
+        InputStream inputStream =TestMyBatis.class.getResourceAsStream(resource);
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+        //操作数据库的类 SqlSession
+        SqlSession session=sqlSessionFactory.openSession();
+        return session;
+    }
+    //调用存储过程
+    public static void main(String[] args) throws IOException {
+        SqlSession session=getSession();
+        CallMapper cm=session.getMapper(CallMapper.class);
+        Map map=new HashMap();
+        map.put("p1", 100);
+        map.put("p2", 200);
+        cm.callProcedure(map);
+        System.out.println(map.get("p3"));
+    }
+    
+    @Test
+    //调用函数
+    public void funTest(){
+        SqlSession session=getSession();
+        CallMapper cm=session.getMapper(CallMapper.class);
+        Map map=new HashMap();
+        map.put("p1", 100);
+        map.put("p2", 400);
+        cm.callFunction(map);
+        System.out.println(map.get("p3"));
+    }
+}
+
+调用mysql数据库实例
+（准备数据库表和存储过程）
+create table p_user(  
+    id int primary key auto_increment,  
+    name varchar(10),
+    sex char(2)
+); 
+
+insert into p_user(name,sex) values('A',"男");  
+insert into p_user(name,sex) values('B',"女");  
+insert into p_user(name,sex) values('C',"男");  
+
+-- 创建存储过程(查询得到男性或女性的数量, 如果传入的是0就女性否则是男性)
+DELIMITER $
+CREATE PROCEDURE mybatis.ges_user_count(IN sex_id INT, OUT user_count INT)
+BEGIN  
+IF sex_id=0 THEN
+SELECT COUNT(*) FROM mybatis.p_user WHERE p_user.sex='女' INTO user_count;
+ELSE
+SELECT COUNT(*) FROM mybatis.p_user WHERE p_user.sex='男' INTO user_count;
+END IF;
+END 
+$
+
+-- 调用存储过程
+DELIMITER ;
+SET @user_count = 0;
+CALL mybatis.ges_user_count(1, @user_count);
+SELECT @user_count;
+
+对应的xml
+<!-- 
+    查询得到男性或女性的数量, 如果传入的是0就女性否则是男性
+ -->
+<select id="getUserCount" parameterMap="getUserCountMap" statementType="CALLABLE">
+    CALL mybatis.ges_user_count(?,?)
+</select>
+
+<!--
+    parameterMap.put("sexid", 0);
+    parameterMap.put("usercount", -1);
+ -->
+<parameterMap type="java.util.Map" id="getUserCountMap">
+    <parameter property="sexid" mode="IN" jdbcType="INTEGER"/>
+    <parameter property="usercount" mode="OUT" jdbcType="INTEGER"/>
+</parameterMap>
+
+单元测试代码
+package me.gacl.test;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import me.gacl.custom.model.ConditionUser;
+import me.gacl.domain.User;
+import me.gacl.util.MyBatisUtil;
+import org.apache.ibatis.session.SqlSession;
+import org.junit.Test;
+
+/**
+ * @author gacl
+ * 测试调用存储过程
+ */
+public class Test6 {
+    
+    @Test
+    public void testGetUserCount(){
+        SqlSession sqlSession = MyBatisUtil.getSqlSession();
+        /**
+         * 映射sql的标识字符串，
+         * me.gacl.mapping.userMapper是userMapper.xml文件中mapper标签的namespace属性的值，
+         * getUserCount是select标签的id属性值，通过select标签的id属性值就可以找到要执行的SQL
+         */
+        String statement = "me.gacl.mapping.userMapper.getUserCount";//映射sql的标识字符串
+        Map<String, Integer> parameterMap = new HashMap<String, Integer>();
+        parameterMap.put("sexid", 1);
+        parameterMap.put("usercount", -1);
+        sqlSession.selectOne(statement, parameterMap);
+        Integer result = parameterMap.get("usercount");
+        System.out.println(result);
+        sqlSession.close();
+    }
+}
+
+
+  
+  
