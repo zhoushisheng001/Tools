@@ -1,0 +1,1 @@
+db.zg_zhou.find({"age":{"$gt":26}}).pretty() --pretty()是格式化
