@@ -1,0 +1,87 @@
+完成3台eureka服务的yml配置：
+
+7001的配置如下
+
+server:
+
+  port: 7001
+
+eureka:
+
+  instance:
+
+    hostname: eureka7001.com
+
+  client:
+
+    register-with-eureka: false
+
+    fetch-registry: false
+
+    service-url: 
+
+      defaultZone: http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/
+
+7002的配置如下：
+
+server:
+
+  port: 7002
+
+eureka:
+
+  instance:
+
+    hostname: eureka7002.com
+
+  client:
+
+    register-with-eureka: false
+
+    fetch-registry: false
+
+    service-url: 
+
+      defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7003.com:7003/eureka/
+
+7003的配置如下：  
+
+server:
+
+  port: 7003
+
+eureka:
+
+  instance:
+
+    hostname: eureka7003.com
+
+  client:
+
+    register-with-eureka: false
+
+    fetch-registry: false
+
+    service-url: 
+
+      defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/
+
+
+这样eureka的集群已经配置完成了，现在我们配置部门微服务注册到这个集群上去。
+
+eureka:
+
+  client:
+
+    service-url: 
+
+      defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/
+
+  instance:
+
+    instance-id: microcloudservice-provider-dept-8001
+
+    prefer-ip-address: true
+      
+      
+      
