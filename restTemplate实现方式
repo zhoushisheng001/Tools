@@ -1,0 +1,61 @@
+现在来看下其它几种客户端的引入。在ClientHttpRequestFactory的实现那张图中列出了RestTemplate的几种REST Client的封装。其中最常用的有以下三种：
+
+SimpleClientHttpRequestFactory（封装URLConnection）
+HttpComponentsClientHttpRequestFactory（封装HttpClient）
+OkHttp3ClientHttpRequestFactory(封装OKHttp)
+
+其切换与使用也很简单，在pom中引入相应依赖
+<dependencies>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>3.11.0</version>
+        </dependency>
+   </dependencies>
+
+
+
+package com.pk.client.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
+
+/**
+ * Created by pangkunkun on 2018/8/25.
+ */
+@Configuration
+public class RestConfig {
+
+    @Bean
+    public RestTemplate restTemplate(){
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate;
+    }
+
+    @Bean("urlConnection")
+    public RestTemplate urlConnectionRestTemplate(){
+        RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
+        return restTemplate;
+    }
+
+    @Bean("httpClient")
+    public RestTemplate httpClientRestTemplate(){
+        RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+        return restTemplate;
+    }
+
+    @Bean("OKHttp3")
+    public RestTemplate OKHttp3RestTemplate(){
+        RestTemplate restTemplate = new RestTemplate(new OkHttp3ClientHttpRequestFactory());
+        return restTemplate;
+    }
+}
