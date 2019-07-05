@@ -1,4 +1,8 @@
-  int thrednum = (number % Constants.TAKE_AREA_THIRTY == 0) ? (number / Constants.TAKE_AREA_THIRTY) : (number / Constants.TAKE_AREA_THIRTY + 1);
+  //获得cpu数作为启动线程的最大数最合理
+  int cpuNum = Runtime.getRuntime().availableProcessors() * 2;
+  private final ExecutorService service = Executors.newFixedThreadPool(cpuNum); 
+ -------------------------------------------------------------------------------------------------------------------------------------
+ int thrednum = (number % Constants.TAKE_AREA_THIRTY == 0) ? (number / Constants.TAKE_AREA_THIRTY) : (number / Constants.TAKE_AREA_THIRTY + 1);
             //创建线程池
             ExecutorService service = Executors.newFixedThreadPool(thrednum);
             BlockingQueue<Future<List<PickupTakeAreaAppInfoBO>>> queue = new LinkedBlockingQueue<>();
