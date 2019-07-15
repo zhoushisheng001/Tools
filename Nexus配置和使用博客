@@ -1,1 +1,142 @@
 https://www.cnblogs.com/h--d/p/5719040.html
+
+以前项目配置 pom文件
+ <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+	<!--  项目发布到私服，maven项目使用命令:mvn clean deploy:需要在pom文件中配置一下代码 -->
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Team Nexus Release Repository</name>
+            <url>http://nexus.ms.com:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>Team Nexus Snapshot Repository</name>
+            <url>http://nexus.ms.com:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>nexus-public</id>
+            <name>Nexus public Repository</name>
+            <url>http://nexus.ms.com:8081/repository/maven-public</url>
+        </repository>
+    </repositories>
+
+pom 文件
+ <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+    
+  2. settings 文件
+  <!-- jar包打到私服里面需要添加的私服用户名和密码 -->
+   <server>  
+      <id>nexus-releases</id>  
+      <username>kye_anonymous</username>  
+      <password>kye_anonymous</password>  
+    </server>  
+    <server>  
+      <id>nexus-snapshots</id>  
+      <username>kye_anonymous</username>  
+      <password>kye_anonymous</password>  
+    </server>
+  </servers>
+  
+  镜像
+    <mirror>
+      <id>nexus-public</id>
+      <mirrorOf>*</mirrorOf>
+      <url>http://nexus.ms.com:8081/repository/maven-public/</url>
+    </mirror>
+     <mirror>
+      <id>ali</id>
+      <mirrorOf>central</mirrorOf>
+      <name>aliyun maven</name>
+      <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+    </mirror>
+  </mirrors>
+  
+  <!-- 获得jar 和插件的地址 -->
+  <profile>
+      <id>nexus-resp</id>
+      <repositories>
+          <repository>
+            <id>nexus-releases</id>
+            <url>http://nexus.ms.com:8081/repository/maven-releases/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+          </repository>
+          <repository>
+            <id>nexus-snapshots</id>
+            <url>http://nexus.ms.com:8081/repository/maven-snapshots/</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+          </repository>
+      </repositories>
+
+      <pluginRepositories>
+        <pluginRepository>
+          <id>nexus-plugin</id>
+          <url>http://nexus.ms.com:8081/repository/maven-releases/</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>false</enabled></snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+ </profiles>
+    
+需要激活上面配置的服务地址
+  <activeProfiles>
+    <activeProfile>nexus-resp</activeProfile>
+  </activeProfiles>
+  
+  
+  
+  
+   
+    
+    
+    
+
