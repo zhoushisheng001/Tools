@@ -1,0 +1,62 @@
+一：在application.properties中设置
+#编码格式
+spring.http.encoding.force=true
+spring.http.encoding.charset=UTF-8
+spring.http.encoding.enabled=true
+server.tomcat.uri-encoding=UTF-8
+
+二 自己手动书写过滤器
+//字符编码过滤器
+@WebFilter(urlPatterns = "/*",filterName = "CharacterEncodingFilter")
+public class CharacterEncodingFilter implements Filter{
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
+ 
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+ 
+        filterChain.doFilter(request , response);
+    }
+    @Override
+    public void destroy() {
+    }
+}
+如果这种方式也解决不了问题的话，只能使用最后一种方式了。
+
+三：、使用java配置写一个字符编码配置类
+
+
+/**
+ * 中文乱码解决
+ */
+@Configuration
+public class CharsetConfig extends WebMvcConfigurerAdapter {
+    @Bean
+    public HttpMessageConverter<String> responseBodyConverter() {
+        StringHttpMessageConverter converter = new StringHttpMessageConverter(
+                Charset.forName("UTF-8"));
+        return converter;
+    }
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        super.configureMessageConverters(converters);
+        converters.add(responseBodyConverter());
+    }
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.favorPathExtension(false);
+    }
+ }
+ 
+ StringHttpMessageConverter是一个请求和响应信息的编码转换器，
+ 通过源码我们发现默认编码ISO-8859-1，不是UTF-8，所以我们只要通过上述配置将请求字符串转为UTF-8 即可
+ WebMvcConfigurerAdapter 是springmvc的一个配置支配器类，我们可以实现我们感兴趣的方法。
+ 
+ 
+
+ 
