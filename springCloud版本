@@ -1,0 +1,21 @@
+  <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.4.RELEASE</version>
+  </parent>
+    
+    
+<spring-cloud-dependencies.version>Dalston.SR1</spring-cloud-dependencies.version>
+
+
+<dependencyManagement>
+ <dependencies>
+  <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud-dependencies.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+   </dependency>
+ </dependencies>
+</dependencyManagement>
