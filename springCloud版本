@@ -4,8 +4,13 @@
         <version>1.5.4.RELEASE</version>
   </parent>
     
-    
-<spring-cloud-dependencies.version>Dalston.SR1</spring-cloud-dependencies.version>
+<properties>
+  <java.version>1.8</java.version>
+  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <maven.build.timestamp.format>yyMMddHHmm</maven.build.timestamp.format>
+  <spring-cloud-dependencies.version>Dalston.SR1</spring-cloud-dependencies.version>
+  <spring-cloud-dependencies.version>Dalston.SR1</spring-cloud-dependencies.version>
+</properties>
 
 
 <dependencyManagement>
