@@ -1,2 +1,7 @@
 mvn install:install-file -Dfile=D:/workspack/BrokerCourier/lib/oracle-11g-11.2.0.1.0.jar 
 -DgroupId=oracle -DartifactId=oracle-11g -Dversion=11.2.0.1.0 -Dpackaging=jar
+
+将jar打入私服中 其中 -Dfile=oracle-11g-11.2.0.1.0.jar 是本地jar的地址和名称
+自己可以先在dos命令里面却换到该jar包目录下面就可以根据名称直接打包了
+mvn deploy:deploy-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.1.0 -Dpackaging=jar -Dfile=oracle-11g-11.2.0.1.0.jar -Durl=http://repodeploy:repodeploy@nexus-qa.cgws.com/repository/maven-releases/
+
