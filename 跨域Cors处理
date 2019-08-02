@@ -1,0 +1,47 @@
+/**
+ * 使用spring 方式
+ * spring 4.2起，
+ * 可以使用spring 自带的CorsFilter和@CrossOrgin注解
+ */
+@Configuration
+public class CorsConfig {
+    @Bean
+    public FilterRegistrationBean corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        // 设置你要允许的网站域名，*表示任意域名
+        config.addAllowedOrigin("https://ljh.com");
+        // 
+        config.addAllowedHeader("*");//* 表示任意头部信息
+        config.addAllowedMethod("GET, POST,PUT,DELETE,HEAD,OPTIONS");
+        source.registerCorsConfiguration("/**", config);
+        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+        // 这个顺序很重要，为避免麻烦请设置在最前
+        bean.setOrder(0);
+        return bean;
+    }
+}
+
+
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+/**
+ * spring boot 方式--全局
+ * 我认为比较优雅的解决方案
+ * 针对对某个Controller类或者方法可使用@CrossOrigin注解
+    获得 extends WebMvcConfigurerAdapter
+ */
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+        .allowedOrigins("http://ljh.com")
+        .allowedMethods("GET,POST,PUT,DELETE,HEAD,OPTIONS")
+        .allowedHeaders("*")
+        .allowCredentials(false).maxAge(3600);
+    }
+
