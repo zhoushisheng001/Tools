@@ -39,4 +39,9 @@ select
 col1,col2,col3,...,coln,sysdate
 from A;
 
+oracle 添加字段语句
+ALTER TABLE WT_SIGN_INFO_RECORD add (PROTO_VERSION VARCHAR2(8));
+COMMENT ON COLUMN WT_SIGN_INFO_RECORD.PROTO_VERSION IS '区分协议的版本号';   
+
+
 
