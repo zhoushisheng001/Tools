@@ -33,3 +33,4 @@
  上面是所有的配置
 下面是说明
 java -server -Xms2G -Xmx2G -jar --server.port=8902
+java -jar -Dserver.port=8080 springBoot-kibana-1.0.0-SNAPSHOT.jar
