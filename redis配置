@@ -19,6 +19,9 @@ spring.redis.commandTimeout=5000
 # redis.cluster
 spring.redis.cluster.nodes=10.100.50.23:6380,10.100.50.23:6381,10.100.50.23:6382,10.100.50.23:6383,10.100.50.23:6384,10.100.50.23:638
 看RedisProperties看到对应的配置文件单机哨兵和集群的配置方式
+#哨兵的配置列表  
+spring.redis.sentinel.master=mymaster
+spring.redis.sentinel.nodes=39.107.119.256:26379,39.107.119.256:26380
 
 自己可以生成redis集成工具
 package com.zxy.demo.redis;
