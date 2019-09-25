@@ -1,0 +1,5 @@
+vim /etc/sysconfig/network-scripts/ifcfg-ens33
+把原来的no改为yes就可以实现静态ip ONBOOT=yes
+service network restart 配置生效
+关闭网络防火墙systemctl stop firewalld.service
+redis 安装前安装 gcc 和 make 执行 yum -y install gcc automake autoconf libtool make 
