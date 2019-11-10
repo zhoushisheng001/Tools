@@ -1,0 +1,50 @@
+docker安装命令
+1，yum install epel-release -y
+2，yum clean all
+3，yum list
+4，yum install docker-io -y  -- 安装
+5，systemctl start docker
+
+-- docker info  (查看docker 是否安装成功)
+systemctl start docker      运行docker(守护进程，后台运行)
+systemctl stop docker      停止docker
+systemctl restart docker   重启docker
+
+
+下载mysql 和启动mysql
+docker pull mysql:5.7
+docker run -p 3306:3306 --name zhou_mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7
+docker start  zhou_mysql
+
+下载rabbitmq方法
+docker search rabbitmq:management
+docker pull rabbitmq:management
+--启动
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
+根据名称启动 docker start rabbitmq (name)
+删除docker rmi ID
+账户密码都是： guest 
+自己也新增了用户和密码： zhou01
+
+docker run -d --name rabbitmq --publish 5671:5671 \ --publish 5672:5672 
+--publish 4369:4369 --publish 25672:25672 --publish 15671:15671 
+--publish 15672:15672 \rabbitmq:management
+
+
+--------------------------------git---------------------------------------------------
+git init --->初始化项目为git项目
+git add .  -- 将项目添加到暂存区
+
+
+docker run -p 3306:3306 --name zhou_mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7
+
+
+
+
+
+
+
+
+
+
+
