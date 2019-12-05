@@ -1,0 +1,16 @@
+@PostConstruct
+  public void init() {
+    try {
+      MBeanServer beanServer = ManagementFactory.getPlatformMBeanServer();
+      Set<ObjectName> objectNames = beanServer.queryNames(new ObjectName("*:type=Connector,*"),
+              Query.match(Query.attr("protocol"), Query.value("HTTP/1.1")));
+      serverIp = InetAddress.getLocalHost().getHostAddress();
+      serverPort = objectNames.iterator().next().getKeyProperty("port");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+   
+  这段代码可以获取到，但是存在一个问题就是在Linux环境下启动项目的时候，
+  objectNames.iterator().next().getKeyProperty("port");这句会抛出异常：
+  java.util.NoSuchElementException。如果仅仅是在Windows下的话，上面的代码完全OK
