@@ -7,15 +7,17 @@ docker安装命令
 
 -- docker info  (查看docker 是否安装成功)
 systemctl start docker      运行docker(守护进程，后台运行)
-systemctl stop docker      停止docker
+systemctl stop docker      停止dockersystemctl restart docker//重启
 systemctl restart docker   重启docker
 
 -- 解决拉取镜像慢问题
 解决方法修改 /etc/docker/daemon.json 文件并添加上 registry-mirrors 键值。然后重启docker就可以了
 // 原来有该文件但是为空
 {
-  "registry-mirrors": ["https://registry.docker-cn.com"]
+  "registry-mirrors": ["https://5ctu6gud.mirror.aliyuncs.com"]
 }
+systemctl daemon-reload//重新加载
+systemctl restart docker//重启
 
 下载mysql 和启动mysql
 docker pull mysql:5.7
