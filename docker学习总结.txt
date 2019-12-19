@@ -12,7 +12,7 @@ systemctl restart docker   重启docker
 
 -- 解决拉取镜像慢问题
 解决方法修改 /etc/docker/daemon.json 文件并添加上 registry-mirrors 键值。然后重启docker就可以了
-
+// 原来有该文件但是为空
 {
   "registry-mirrors": ["https://registry.docker-cn.com"]
 }
