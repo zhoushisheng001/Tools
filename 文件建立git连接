@@ -16,6 +16,11 @@ github 账户
 zhoushisheng001
 nizi.19921220
 
+阿里云镜像账户和地址
+https://cr.console.aliyun.com
+用户名 zhoushisheng01
+密码 nizi.19921220
+
 获得服务上的分支
 git fetch
 git checkout origin/fix_base_data 获得服务器上的分支
