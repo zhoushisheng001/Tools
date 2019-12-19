@@ -20,6 +20,8 @@ nizi.19921220
 https://cr.console.aliyun.com
 用户名 zhoushisheng01
 密码 nizi.19921220
+镜像加速器地址 https://5ctu6gud.mirror.aliyuncs.com
+
 
 获得服务上的分支
 git fetch
