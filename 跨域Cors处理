@@ -14,7 +14,7 @@ public class CorsConfig {
         config.addAllowedOrigin("https://ljh.com");
         // 
         config.addAllowedHeader("*");//* 表示任意头部信息
-        config.addAllowedMethod("GET, POST,PUT,DELETE,HEAD,OPTIONS");
+        config.addAllowedMethod("GET", "POST","PUT","DELETE","HEAD","OPTIONS");
         source.registerCorsConfiguration("/**", config);
         FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
         // 这个顺序很重要，为避免麻烦请设置在最前
@@ -40,7 +40,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
         .allowedOrigins("http://ljh.com")
-        .allowedMethods("GET,POST,PUT,DELETE,HEAD,OPTIONS")
+        .allowedMethods("GET","POST","PUT","DELETE","HEAD","OPTIONS")
         .allowedHeaders("*")
         .allowCredentials(false).maxAge(3600);
     }
