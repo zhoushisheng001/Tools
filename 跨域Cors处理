@@ -1,3 +1,28 @@
+自己经常用的方式
+
+@Configuration
+public class WebMvcConfig implements WebMvcConfigurer {
+
+
+    /**
+     * 处理跨域问题
+     * @param registry
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE","PATCH")
+                .allowedHeaders("*")
+                .maxAge(3600)
+                .allowCredentials(true);
+    }
+}
+
+
+
+
+
 /**
  * 使用spring 方式
  * spring 4.2起，
