@@ -1,0 +1,11 @@
+这里面能根据端口判断该服务是否占用 netstat -anp | grep :8443 | wc -l
+
+
+#!/bin/bash 
+A=`ps -C postgres --no-header | wc -l`
+B=`ps -C nginx    --no-header | wc -l`
+if [ $A -eq 0 ];then
+     killall keepalived
+elif [ $B -eq 0 ];then
+     killall keepalived
+fi
