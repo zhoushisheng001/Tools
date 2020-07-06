@@ -1,0 +1,186 @@
+package com.cczq.cgws.zsyyt.provider.datasource;
+
+import com.alibaba.druid.pool.DruidDataSource;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
+import javax.sql.DataSource;
+
+/**
+ * @author zhoushisheng
+ * Dzd数据源配置
+ */
+@SuppressWarnings("all")
+@Lazy
+@Configuration
+@MapperScan(basePackages = {"com.cczq.cgws.zsyyt.provider.mapper.dzd"},sqlSessionFactoryRef  = "DzdDataSqlSessionFactory")
+public class DzdDataSourceConfig extends DataSourceConfigSupport {
+
+    private static final Logger logger = LoggerFactory.getLogger(DzdDataSourceConfig.class);
+
+    @Value("${validationQuery}")
+    private String validationQuery;
+
+    @Value("${spring.datasource.driver-class-name}")
+    private String drivername;
+
+    @Value("${spring.datasource.dzd.jdbcUrl}")
+    private String url;
+
+    @Value("${spring.datasource.dzd.username}")
+    private String username;
+
+    @Value("${spring.datasource.dzd.password}")
+    private String password;
+
+
+    @Bean(name = "DzdDataSource")
+    public DataSource dataSource() {
+        try {
+            DruidDataSource druidDataSource = new DruidDataSource();
+            druidDataSource.setDriverClassName(drivername);
+            druidDataSource.setUrl(url);
+            druidDataSource.setUsername(username);
+            druidDataSource.setPassword(password);
+            druidDataSource.setValidationQuery(validationQuery);
+            initDataSource(druidDataSource);
+            return druidDataSource;
+        } catch (Exception e) {
+            logger.error("DzdDataSource数据源初始化异常",e);
+            return null;
+        }
+    }
+
+
+    @Bean(name = "DzdDataSqlSessionFactory")
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("DzdDataSource") DataSource dataSource)
+            throws Exception {
+        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+        bean.setDataSource(dataSource);
+        bean.setMapperLocations(
+                new PathMatchingResourcePatternResolver().getResources("classpath:mapper/dzd/*.xml"));
+        return bean.getObject();
+    }
+
+    @Bean(name = "DzdDataTransactionManager")
+    public DataSourceTransactionManager transactionManager(@Qualifier("DzdDataSource") DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
+
+    @Bean(name = "DzdDataSqlSessionTemplate")
+    public SqlSessionTemplate sqlSessionTemplate(
+            @Qualifier("DzdDataSqlSessionFactory") SqlSessionFactory sqlSessionFactory) throws Exception {
+        return new SqlSessionTemplate(sqlSessionFactory);
+    }
+
+}
+
+
+================================================== 第二个 ================================================================
+
+
+package com.cczq.cgws.zsyyt.provider.datasource;
+
+import com.alibaba.druid.pool.DruidDataSource;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
+import javax.sql.DataSource;
+
+/**
+ * @author zhoushisheng
+ * OUS数据源配置
+ */
+@SuppressWarnings("all")
+@Configuration
+@MapperScan(basePackages = {"com.cczq.cgws.zsyyt.provider.mapper.osu"},sqlSessionFactoryRef  = "OsuDataSqlSessionFactory")
+public class OsuDataSourceConfig extends DataSourceConfigSupport {
+
+    private static final Logger logger = LoggerFactory.getLogger(OsuDataSourceConfig.class);
+
+    @Value("${validationQuery}")
+    private String validationQuery;
+
+    @Value("${spring.datasource.driver-class-name}")
+    private String drivername;
+
+    @Value("${spring.datasource.osu.jdbcUrl}")
+    private String url;
+
+    @Value("${spring.datasource.osu.username}")
+    private String username;
+
+    @Value("${spring.datasource.osu.password}")
+    private String password;
+
+    @Bean(name = "OsuDataSource")
+    public DataSource dataSource() {
+        try {
+            DruidDataSource druidDataSource = new DruidDataSource();
+            druidDataSource.setDriverClassName(drivername);
+            druidDataSource.setUrl(url);
+            druidDataSource.setUsername(username);
+            druidDataSource.setPassword(password);
+            druidDataSource.setValidationQuery(validationQuery);
+            initDataSource(druidDataSource);
+            return druidDataSource;
+        } catch (Exception e) {
+            logger.error("OsuDataSource数据源初始化异常",e);
+            return null;
+        }
+    }
+
+
+    @Bean(name = "OsuDataSqlSessionFactory")
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("OsuDataSource") DataSource dataSource)
+            throws Exception {
+        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
+        bean.setDataSource(dataSource);
+        bean.setMapperLocations(
+                new PathMatchingResourcePatternResolver().getResources("classpath:mapper/osu/*.xml"));
+        return bean.getObject();
+    }
+
+    @Bean(name = "OsuDataTransactionManager")
+    public DataSourceTransactionManager transactionManager(@Qualifier("OsuDataSource") DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
+
+    @Bean(name = "OsuDataSqlSessionTemplate")
+    public SqlSessionTemplate sqlSessionTemplate(
+            @Qualifier("OsuDataSqlSessionFactory") SqlSessionFactory sqlSessionFactory) throws Exception {
+        return new SqlSessionTemplate(sqlSessionFactory);
+    }
+
+}
+
+
+
+
+
+
